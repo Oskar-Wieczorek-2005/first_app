@@ -100,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[const Text('Welcome to my shop!')],
         ),
       ),
       floatingActionButton: FloatingActionButton(
