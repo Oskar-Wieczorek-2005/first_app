@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
+      body: const Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[const Text('Welcome to my shop!')],
+          children: <Widget>[Text('Welcome to my shop!')],
         ),
       ),
       floatingActionButton: FloatingActionButton(
