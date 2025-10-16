@@ -16,49 +16,89 @@ class App extends StatelessWidget {
   }
 }
 
+// ---------------------------
+// Order Item Display Widget
+// ---------------------------
 class OrderItemDisplay extends StatelessWidget {
-  final String itemType;
   final int quantity;
+  final String itemType;
+  final List<String> descriptions;
 
-  const OrderItemDisplay(this.quantity, this.itemType, {super.key});
+  const OrderItemDisplay(this.quantity, this.itemType, this.descriptions,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.red,
       padding: const EdgeInsets.all(8.0),
-      child: Text(
-        '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
-        style: const TextStyle(color: Colors.white),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          if (descriptions.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: descriptions
+                  .asMap()
+                  .entries
+                  .map((entry) => Text(
+                        'Sandwich ${entry.key + 1}: ${entry.value}',
+                        style: const TextStyle(color: Colors.white70),
+                      ))
+                  .toList(),
+            ),
+        ],
       ),
     );
   }
 }
 
+// ---------------------------
+// Order Screen
+// ---------------------------
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
 
   const OrderScreen({super.key, this.maxQuantity = 10});
 
   @override
-  State<OrderScreen> createState() {
-    return _OrderScreenState();
-  }
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
+  final List<String> _descriptions = [];
+  final TextEditingController _descriptionController = TextEditingController();
 
   void _increaseQuantity() {
     if (_quantity < widget.maxQuantity) {
-      setState(() => _quantity++);
+      setState(() {
+        final note = _descriptionController.text.trim();
+        _descriptions.add(note.isEmpty ? '(No note)' : note);
+        _quantity++;
+        _descriptionController.clear();
+      });
     }
   }
 
   void _decreaseQuantity() {
     if (_quantity > 0) {
-      setState(() => _quantity--);
+      setState(() {
+        _quantity--;
+        _descriptions.removeLast();
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,24 +107,34 @@ class _OrderScreenState extends State<OrderScreen> {
       appBar: AppBar(
         title: const Text('Sandwich Counter'),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            OrderItemDisplay(
-              _quantity,
-              'Footlong',
+            OrderItemDisplay(_quantity, 'Footlong', _descriptions),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Type your order note before adding a sandwich',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: _increaseQuantity,
-                  child: const Text('Add'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add'),
                 ),
-                ElevatedButton(
+                const SizedBox(width: 16),
+                ElevatedButton.icon(
                   onPressed: _decreaseQuantity,
-                  child: const Text('Remove'),
+                  icon: const Icon(Icons.remove),
+                  label: const Text('Remove'),
                 ),
               ],
             ),
