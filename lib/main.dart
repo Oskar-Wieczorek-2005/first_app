@@ -9,38 +9,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sandwich Counter'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            OrderItemDisplay(
-              0, // Replace _quantity with a default value or a variable
-              'Footlong',
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print('Add button pressed!');
-                  },
-                  child: const Text('Add'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    print('Remove button pressed!');
-                  },
-                  child: const Text('Remove'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    return const MaterialApp(
+      title: 'Sandwich Shop App',
+      home: OrderScreen(maxQuantity: 5),
     );
   }
 }
@@ -76,11 +47,43 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  final int _quantity = 0;
+  int _quantity = 0;
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sandwich Counter'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            OrderItemDisplay(
+              _quantity,
+              'Footlong',
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    print('Add button pressed!');
+                  },
+                  child: const Text('Add'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    print('Remove button pressed!');
+                  },
+                  child: const Text('Remove'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
