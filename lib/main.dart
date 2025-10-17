@@ -126,13 +126,15 @@ class _OrderScreenState extends State<OrderScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: _increaseQuantity,
+                  onPressed: _quantity >= widget.maxQuantity
+                      ? null
+                      : _increaseQuantity,
                   icon: const Icon(Icons.add),
                   label: const Text('Add'),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
-                  onPressed: _decreaseQuantity,
+                  onPressed: _quantity > 0 ? _decreaseQuantity : null,
                   icon: const Icon(Icons.remove),
                   label: const Text('Remove'),
                 ),
