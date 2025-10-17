@@ -16,16 +16,11 @@ class App extends StatelessWidget {
   }
 }
 
-// ---------------------------
-// Order Item Display Widget
-// ---------------------------
 class OrderItemDisplay extends StatelessWidget {
   final int quantity;
-  final String itemType;
   final List<String> descriptions;
 
-  const OrderItemDisplay(this.quantity, this.itemType, this.descriptions,
-      {super.key});
+  const OrderItemDisplay(this.quantity, this.descriptions, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +32,7 @@ class OrderItemDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+            '$quantity sandwich(es): ${'🥪' * quantity}',
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           if (descriptions.isNotEmpty)
@@ -58,9 +53,6 @@ class OrderItemDisplay extends StatelessWidget {
   }
 }
 
-// ---------------------------
-// Order Screen
-// ---------------------------
 class OrderScreen extends StatefulWidget {
   final int maxQuantity;
 
@@ -74,12 +66,15 @@ class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
   final List<String> _descriptions = [];
   final TextEditingController _descriptionController = TextEditingController();
+  double _sandwichTypeValue = 1; // 0 = Six-inch, 1 = Footlong
 
   void _increaseQuantity() {
     if (_quantity < widget.maxQuantity) {
       setState(() {
-        final note = _descriptionController.text.trim();
-        _descriptions.add(note.isEmpty ? '(No note)' : note);
+        final type = _sandwichTypeValue == 1 ? 'Footlong' : 'Six-inch';
+        final noteText = _descriptionController.text.trim();
+        _descriptions
+            .add('[$type] ${noteText.isEmpty ? "(No note)" : noteText}');
         _quantity++;
         _descriptionController.clear();
       });
@@ -112,7 +107,29 @@ class _OrderScreenState extends State<OrderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            OrderItemDisplay(_quantity, 'Footlong', _descriptions),
+            OrderItemDisplay(_quantity, _descriptions),
+            const SizedBox(height: 16),
+            Column(
+              children: [
+                Text(
+                  _sandwichTypeValue == 1 ? 'Footlong' : 'Six-inch',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Slider(
+                  value: _sandwichTypeValue,
+                  min: 0,
+                  max: 1,
+                  divisions: 1,
+                  label: _sandwichTypeValue == 1 ? 'Footlong' : 'Six-inch',
+                  onChanged: (value) {
+                    setState(() {
+                      _sandwichTypeValue = value;
+                    });
+                  },
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
