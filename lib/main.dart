@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sandwich_shop/views/app_styles.dart';
 
 void main() {
-  runApp(const App());
+  runApp(const App()); //Hi Ozi <3 I love you so much :) - A.W
 }
 
 class App extends StatelessWidget {
