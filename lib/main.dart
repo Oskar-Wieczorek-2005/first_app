@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'repositories/pricing_repository.dart';
 
 void main() => runApp(const App());
 
@@ -29,8 +30,11 @@ class _OrderScreenState extends State<OrderScreen> {
   bool _isFootlong = true;
   BreadType _breadType = BreadType.white;
   String _note = '';
-  bool _isToasted = false; // <-- new state variable
+  bool _isToasted = false;
   final int _maxQuantity = 5;
+
+  // 💰 Pricing repository instance
+  final PricingRepository _pricingRepository = PricingRepository();
 
   void _increment() {
     setState(() {
@@ -51,6 +55,10 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     final itemType = _isFootlong ? 'footlong' : 'six-inch';
+    final totalPrice = _pricingRepository.calculateTotal(
+      isFootlong: _isFootlong,
+      quantity: _quantity,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +68,7 @@ class _OrderScreenState extends State<OrderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Switch for sandwich size
+            // Sandwich size switch
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -76,7 +84,7 @@ class _OrderScreenState extends State<OrderScreen> {
               ],
             ),
 
-            // 🔥 New toasted/untoasted switch row
+            // Toasted switch
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -94,7 +102,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
             const SizedBox(height: 20),
 
-            // Dropdown for bread type
+            // Bread type dropdown
             DropdownMenu<BreadType>(
               initialSelection: _breadType,
               onSelected: (BreadType? newValue) {
@@ -116,18 +124,26 @@ class _OrderScreenState extends State<OrderScreen> {
 
             const SizedBox(height: 20),
 
-            // Quantity display
+            // Order display
             OrderItemDisplay(
               quantity: _quantity,
               itemType: itemType,
               breadType: _breadType,
               orderNote: _note.isEmpty ? 'No notes added.' : _note,
-              isToasted: _isToasted, // <-- pass toasted info
+              isToasted: _isToasted,
+            ),
+
+            const SizedBox(height: 10),
+
+            // 💷 Total price
+            Text(
+              'Total price: £${totalPrice.toStringAsFixed(2)}',
+              style: normalText,
             ),
 
             const SizedBox(height: 20),
 
-            // Add/Remove buttons
+            // Add / Remove buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -177,7 +193,7 @@ class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final BreadType breadType;
   final String orderNote;
-  final bool isToasted; // <-- new parameter
+  final bool isToasted;
 
   const OrderItemDisplay({
     super.key,
@@ -185,7 +201,7 @@ class OrderItemDisplay extends StatelessWidget {
     required this.itemType,
     required this.breadType,
     required this.orderNote,
-    this.isToasted = false, // default
+    this.isToasted = false,
   });
 
   @override
