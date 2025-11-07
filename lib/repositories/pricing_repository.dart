@@ -1,17 +1,16 @@
 class PricingRepository {
-  final double sixInchPrice;
-  final double footlongPrice;
+  // Prices for different sandwich sizes
+  final double sixInchPrice = 7.0;
+  final double footlongPrice = 11.0;
 
-  PricingRepository({
-    this.sixInchPrice = 7.0,
-    this.footlongPrice = 11.0,
-  });
-
-  double calculateTotal({
-    required bool isFootlong,
-    required int quantity,
-  }) {
-    final pricePerSandwich = isFootlong ? footlongPrice : sixInchPrice;
-    return pricePerSandwich * quantity;
+  /// Calculates total price based on quantity and sandwich size.
+  double calculateTotalPrice(int quantity, String sandwichType) {
+    if (sandwichType == 'six-inch') {
+      return quantity * sixInchPrice;
+    } else if (sandwichType == 'footlong') {
+      return quantity * footlongPrice;
+    } else {
+      throw ArgumentError('Invalid sandwich type: $sandwichType');
+    }
   }
 }

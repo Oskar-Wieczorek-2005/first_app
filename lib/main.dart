@@ -33,189 +33,129 @@ class _OrderScreenState extends State<OrderScreen> {
   bool _isToasted = false;
   final int _maxQuantity = 5;
 
-  // 💰 Pricing repository instance
   final PricingRepository _pricingRepository = PricingRepository();
 
   void _increment() {
-    setState(() {
-      if (_quantity < _maxQuantity) {
-        _quantity++;
-      }
-    });
+    if (_quantity < _maxQuantity) {
+      setState(() => _quantity++);
+    }
   }
 
   void _decrement() {
-    setState(() {
-      if (_quantity > 0) {
-        _quantity--;
-      }
-    });
+    if (_quantity > 0) {
+      setState(() => _quantity--);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final itemType = _isFootlong ? 'footlong' : 'six-inch';
-    final totalPrice = _pricingRepository.calculateTotal(
-      isFootlong: _isFootlong,
-      quantity: _quantity,
-    );
+    final totalPrice =
+        _pricingRepository.calculateTotalPrice(_quantity, itemType);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sandwich Counter'),
-      ),
+      appBar: AppBar(title: const Text('Sandwich Counter')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Sandwich size switch
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('six-inch', style: normalText),
-                Switch(
-                  key: const Key('type_switch'),
-                  value: _isFootlong,
-                  onChanged: (value) {
-                    setState(() => _isFootlong = value);
-                  },
-                ),
-                const Text('footlong', style: normalText),
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              OrderItemDisplay(
+                quantity: _quantity,
+                itemType: itemType,
+                breadType: _breadType,
+                orderNote: _note.isEmpty ? 'No notes added.' : _note,
+                isToasted: _isToasted,
+              ),
 
-            // Toasted switch
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('untoasted', style: normalText),
-                Switch(
-                  key: const Key('toasted_switch'),
-                  value: _isToasted,
-                  onChanged: (value) {
-                    setState(() => _isToasted = value);
-                  },
-                ),
-                const Text('toasted', style: normalText),
-              ],
-            ),
+              const SizedBox(height: 10),
 
-            const SizedBox(height: 20),
+              Text('Total Price: £${totalPrice.toStringAsFixed(2)}',
+                  style: normalText),
 
-            // Bread type dropdown
-            DropdownMenu<BreadType>(
-              initialSelection: _breadType,
-              onSelected: (BreadType? newValue) {
-                if (newValue != null) {
+              const SizedBox(height: 20),
+
+              // Add / Remove buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StyledButton(
+                    onPressed: _decrement,
+                    icon: Icons.remove,
+                    label: 'Remove',
+                    backgroundColor: Colors.red,
+                  ),
+                  const SizedBox(width: 10),
+                  StyledButton(
+                    onPressed: _increment,
+                    icon: Icons.add,
+                    label: 'Add',
+                    backgroundColor: Colors.green,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // Sandwich size switch
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('six-inch', style: normalText),
+                  Switch(
+                    value: _isFootlong,
+                    onChanged: (value) {
+                      setState(() => _isFootlong = value);
+                    },
+                  ),
+                  const Text('footlong', style: normalText),
+                ],
+              ),
+
+              // Toasted switch
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('untoasted', style: normalText),
+                  Switch(
+                    value: _isToasted,
+                    onChanged: (value) {
+                      setState(() => _isToasted = value);
+                    },
+                  ),
+                  const Text('toasted', style: normalText),
+                ],
+              ),
+
+              // Bread type dropdown
+              DropdownMenu<BreadType>(
+                initialSelection: _breadType,
+                onSelected: (value) {
                   setState(() {
-                    _breadType = newValue;
-                  });
-                }
-              },
-              dropdownMenuEntries: BreadType.values
-                  .map(
-                    (BreadType type) => DropdownMenuEntry<BreadType>(
-                      value: type,
-                      label: type.name,
-                    ),
-                  )
-                  .toList(),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Order display
-            OrderItemDisplay(
-              quantity: _quantity,
-              itemType: itemType,
-              breadType: _breadType,
-              orderNote: _note.isEmpty ? 'No notes added.' : _note,
-              isToasted: _isToasted,
-            ),
-
-            const SizedBox(height: 10),
-
-            // 💷 Total price
-            Text(
-              'Total price: £${totalPrice.toStringAsFixed(2)}',
-              style: normalText,
-            ),
-
-            const SizedBox(height: 20),
-
-            // Add / Remove buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                StyledButton(
-                  onPressed: _decrement,
-                  icon: Icons.remove,
-                  label: 'Remove',
-                  backgroundColor: Colors.red.shade300,
-                ),
-                const SizedBox(width: 10),
-                StyledButton(
-                  onPressed: _increment,
-                  icon: Icons.add,
-                  label: 'Add',
-                  backgroundColor: Colors.green.shade400,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Notes input
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: TextField(
-                key: const Key('notes_textfield'),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Add a note',
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _note = value;
+                    _breadType = value ?? BreadType.white;
                   });
                 },
+                dropdownMenuEntries: BreadType.values
+                    .map((bread) => DropdownMenuEntry<BreadType>(
+                          value: bread,
+                          label: bread.name,
+                        ))
+                    .toList(),
               ),
-            ),
-          ],
+
+              // Notes input
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  key: const Key('notes_textfield'),
+                  decoration: const InputDecoration(labelText: 'Add a note'),
+                  onChanged: (value) => setState(() => _note = value),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class OrderItemDisplay extends StatelessWidget {
-  final int quantity;
-  final String itemType;
-  final BreadType breadType;
-  final String orderNote;
-  final bool isToasted;
-
-  const OrderItemDisplay({
-    super.key,
-    required this.quantity,
-    required this.itemType,
-    required this.breadType,
-    required this.orderNote,
-    this.isToasted = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final sandwiches = '🥪' * quantity;
-    final toastedText = isToasted ? 'toasted' : 'untoasted';
-    return Column(
-      children: [
-        Text(
-          '$quantity ${breadType.name} $itemType sandwich(es) ($toastedText): $sandwiches',
-          style: normalText,
-        ),
-        Text('Note: $orderNote', style: normalText),
-      ],
     );
   }
 }
@@ -242,9 +182,41 @@ class StyledButton extends StatelessWidget {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
-        foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
+    );
+  }
+}
+
+class OrderItemDisplay extends StatelessWidget {
+  final int quantity;
+  final String itemType;
+  final BreadType breadType;
+  final String orderNote;
+  final bool isToasted;
+
+  const OrderItemDisplay({
+    super.key,
+    required this.quantity,
+    required this.itemType,
+    required this.breadType,
+    required this.orderNote,
+    this.isToasted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sandwiches = '🥪' * quantity;
+    final toastedText = isToasted ? ' (toasted)' : ' (untoasted)';
+
+    return Column(
+      children: [
+        Text(
+          '$quantity ${breadType.name} $itemType sandwich(es): $sandwiches$toastedText',
+          style: normalText,
+        ),
+        Text('Note: $orderNote', style: normalText),
+      ],
     );
   }
 }
