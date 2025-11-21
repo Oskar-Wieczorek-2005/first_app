@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'repositories/pricing_repository.dart';
 import 'repositories/cart.dart'; // Import the Cart class
 
+//Hai Hai :3
 void main() => runApp(const App());
 
 enum BreadType { white, wheat, wholemeal }
@@ -38,14 +39,16 @@ class Sandwich {
   }
 
   String get image {
-    String typeString = type.name;
-    String sizeString = '';
-    if (isFootlong) {
-      sizeString = 'footlong';
-    } else {
-      sizeString = 'six_inch';
+    switch (type) {
+      case SandwichType.veggieDelight:
+        return 'lib/assets/images/veggie_delight.png';
+      case SandwichType.chickenTeriyaki:
+        return 'lib/assets/images/chicken_teriyaki.png';
+      case SandwichType.tunaMelt:
+        return 'lib/assets/images/tuna_melt.png';
+      case SandwichType.meatballMarinara:
+        return 'lib/assets/images/meatball_marinara.png';
     }
-    return 'assets/images/${typeString}_$sizeString.png';
   }
 }
 
@@ -185,6 +188,20 @@ class _OrderScreenState extends State<OrderScreen> {
 
               const SizedBox(height: 10),
 
+              // Sandwich image display
+              Image.asset(
+                Sandwich(
+                  type: _sandwichType,
+                  isFootlong: _isFootlong,
+                  breadType: _breadType,
+                ).image, // Use the Sandwich.image getter
+                height: 150,
+                width: 150,
+                fit: BoxFit.cover,
+              ),
+
+              const SizedBox(height: 10),
+
               OrderItemDisplay(
                 quantity: _quantity,
                 itemType: itemType,
@@ -271,6 +288,13 @@ class _OrderScreenState extends State<OrderScreen> {
         ),
       ),
     );
+  }
+}
+
+extension on SandwichType {
+  String get image {
+    String typeString = name;
+    return 'assets/images/${typeString}.png'; // Adjust path as needed
   }
 }
 
