@@ -97,7 +97,19 @@ class _OrderScreenState extends State<OrderScreen> {
         _pricingRepository.calculateTotalPrice(_quantity, itemType);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sandwich Counter')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset(
+              'lib/assets/images/logo.png', // Ensure this path is correct
+              height: 40,
+            ),
+            const SizedBox(width: 10),
+            const Text('Sandwich Counter'),
+          ],
+        ),
+        centerTitle: false, // Aligns the title and logo to the left
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
