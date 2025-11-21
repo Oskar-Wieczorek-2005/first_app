@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'repositories/pricing_repository.dart';
+import 'repositories/cart.dart'; // Import the Cart class
 
 void main() => runApp(const App());
 
@@ -69,6 +70,7 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+  final Cart _cart = Cart(); // Create a Cart instance
   int _quantity = 0;
   bool _isFootlong = true;
   BreadType _breadType = BreadType.white;
@@ -90,6 +92,18 @@ class _OrderScreenState extends State<OrderScreen> {
     }
   }
 
+  void _addToCart() {
+    final sandwich = Sandwich(
+      type: SandwichType.veggieDelight, // Replace with selected type
+      isFootlong: _isFootlong,
+      breadType: _breadType,
+    );
+    _cart.addItem(sandwich, _quantity, _note, _isToasted);
+    setState(() {
+      _quantity = 0; // Reset quantity after adding to cart
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final itemType = _isFootlong ? 'footlong' : 'six-inch';
@@ -109,6 +123,19 @@ class _OrderScreenState extends State<OrderScreen> {
           ],
         ),
         centerTitle: false, // Aligns the title and logo to the left
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartScreen(cart: _cart),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -207,9 +234,46 @@ class _OrderScreenState extends State<OrderScreen> {
                   onChanged: (value) => setState(() => _note = value),
                 ),
               ),
+
+              ElevatedButton(
+                onPressed: _quantity > 0 ? _addToCart : null,
+                child: const Text('Add to Cart'),
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Add a new screen to display the cart
+class CartScreen extends StatelessWidget {
+  final Cart cart;
+
+  const CartScreen({super.key, required this.cart});
+
+  @override
+  Widget build(BuildContext context) {
+    final cartItems = cart.items;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Your Cart'),
+      ),
+      body: ListView.builder(
+        itemCount: cartItems.length,
+        itemBuilder: (context, index) {
+          final item = cartItems[index];
+          return ListTile(
+            title: Text('${item.sandwich.name} x${item.quantity}'),
+            subtitle: Text(
+              '${item.sandwich.breadType.name}, ${item.sandwich.isFootlong ? 'Footlong' : 'Six-inch'}'
+              '${item.isToasted ? ', Toasted' : ''}\nNote: ${item.note}',
+            ),
+            trailing: Text('£${item.totalPrice.toStringAsFixed(2)}'),
+          );
+        },
       ),
     );
   }
