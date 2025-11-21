@@ -74,6 +74,7 @@ class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
   bool _isFootlong = true;
   BreadType _breadType = BreadType.white;
+  SandwichType _sandwichType = SandwichType.veggieDelight; // Add sandwich type
   String _note = '';
   bool _isToasted = false;
   final int _maxQuantity = 5;
@@ -94,11 +95,15 @@ class _OrderScreenState extends State<OrderScreen> {
 
   void _addToCart() {
     final sandwich = Sandwich(
-      type: SandwichType.veggieDelight, // Replace with selected type
+      type: _sandwichType, // Use selected sandwich type
       isFootlong: _isFootlong,
       breadType: _breadType,
     );
-    _cart.addItem(sandwich, _quantity, _note, _isToasted);
+    final pricePerItem = _pricingRepository.calculatePricePerItem(
+      sandwich.type.name,
+      _isFootlong,
+    );
+    _cart.addItem(sandwich, _quantity, _note, _isToasted, pricePerItem);
     setState(() {
       _quantity = 0; // Reset quantity after adding to cart
     });
@@ -142,6 +147,42 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Bread type dropdown
+              DropdownButton<BreadType>(
+                value: _breadType,
+                onChanged: (value) {
+                  setState(() {
+                    _breadType = value ?? BreadType.white;
+                  });
+                },
+                items: BreadType.values
+                    .map((bread) => DropdownMenuItem<BreadType>(
+                          value: bread,
+                          child: Text(bread.name),
+                        ))
+                    .toList(),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Sandwich type dropdown
+              DropdownButton<SandwichType>(
+                value: _sandwichType,
+                onChanged: (value) {
+                  setState(() {
+                    _sandwichType = value ?? SandwichType.veggieDelight;
+                  });
+                },
+                items: SandwichType.values
+                    .map((type) => DropdownMenuItem<SandwichType>(
+                          value: type,
+                          child: Text(type.name),
+                        ))
+                    .toList(),
+              ),
+
+              const SizedBox(height: 10),
+
               OrderItemDisplay(
                 quantity: _quantity,
                 itemType: itemType,
@@ -207,22 +248,6 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                   const Text('toasted', style: normalText),
                 ],
-              ),
-
-              // Bread type dropdown
-              DropdownMenu<BreadType>(
-                initialSelection: _breadType,
-                onSelected: (value) {
-                  setState(() {
-                    _breadType = value ?? BreadType.white;
-                  });
-                },
-                dropdownMenuEntries: BreadType.values
-                    .map((bread) => DropdownMenuEntry<BreadType>(
-                          value: bread,
-                          label: bread.name,
-                        ))
-                    .toList(),
               ),
 
               // Notes input

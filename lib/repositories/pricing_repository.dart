@@ -13,4 +13,29 @@ class PricingRepository {
       throw ArgumentError('Invalid sandwich type: $sandwichType');
     }
   }
+
+  double calculatePricePerItem(String sandwichType, bool isFootlong) {
+    double basePrice;
+
+    // Set base price based on sandwich type
+    switch (sandwichType) {
+      case 'veggieDelight':
+        basePrice = 3.0;
+        break;
+      case 'chickenTeriyaki':
+        basePrice = 4.5;
+        break;
+      case 'tunaMelt':
+        basePrice = 4.0;
+        break;
+      case 'meatballMarinara':
+        basePrice = 5.0;
+        break;
+      default:
+        basePrice = 3.0; // Default price for unknown types
+    }
+
+    // Adjust price for footlong sandwiches
+    return isFootlong ? basePrice * 1.5 : basePrice;
+  }
 }

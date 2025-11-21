@@ -21,7 +21,8 @@ class Cart {
 
   List<CartItem> get items => List.unmodifiable(_items);
 
-  void addItem(Sandwich sandwich, int quantity, String note, bool isToasted) {
+  void addItem(Sandwich sandwich, int quantity, String note, bool isToasted,
+      double pricePerItem) {
     if (quantity <= 0) return;
 
     final existingItemIndex = _items.indexWhere((item) =>
@@ -39,12 +40,10 @@ class Cart {
         quantity: existingItem.quantity + quantity,
         note: existingItem.note,
         isToasted: existingItem.isToasted,
-        totalPrice: existingItem.totalPrice +
-            (existingItem.totalPrice / existingItem.quantity) * quantity,
+        totalPrice: existingItem.totalPrice + pricePerItem * quantity,
       );
     } else {
       // Add a new item to the cart
-      final pricePerItem = sandwich.isFootlong ? 5.0 : 3.0; // Example pricing
       _items.add(CartItem(
         sandwich: sandwich,
         quantity: quantity,
