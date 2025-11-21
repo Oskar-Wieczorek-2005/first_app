@@ -95,7 +95,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   void _addToCart() {
     final sandwich = Sandwich(
-      type: _sandwichType, // Use selected sandwich type
+      type: _sandwichType,
       isFootlong: _isFootlong,
       breadType: _breadType,
     );
@@ -103,7 +103,9 @@ class _OrderScreenState extends State<OrderScreen> {
       sandwich.type.name,
       _isFootlong,
     );
-    _cart.addItem(sandwich, _quantity, _note, _isToasted, pricePerItem);
+    final totalPrice = pricePerItem * _quantity; // Calculate total price
+    _cart.addItem(
+        sandwich, _quantity, _note, _isToasted, totalPrice); // Pass total price
     setState(() {
       _quantity = 0; // Reset quantity after adding to cart
     });
@@ -296,7 +298,8 @@ class CartScreen extends StatelessWidget {
               '${item.sandwich.breadType.name}, ${item.sandwich.isFootlong ? 'Footlong' : 'Six-inch'}'
               '${item.isToasted ? ', Toasted' : ''}\nNote: ${item.note}',
             ),
-            trailing: Text('£${item.totalPrice.toStringAsFixed(2)}'),
+            trailing: Text(
+                '£${(item.totalPrice).toStringAsFixed(2)}'), // Display total price
           );
         },
       ),
