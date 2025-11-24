@@ -291,13 +291,6 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 }
 
-extension on SandwichType {
-  String get image {
-    String typeString = name;
-    return 'assets/images/${typeString}.png'; // Adjust path as needed
-  }
-}
-
 // Add a new screen to display the cart
 class CartScreen extends StatelessWidget {
   final Cart cart;
