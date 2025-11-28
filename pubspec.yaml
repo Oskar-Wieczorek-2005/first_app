@@ -1,6 +1,6 @@
 name: sandwich_shop
 description: "A Flutter project for a sandwich shop."
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -20,12 +20,11 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
-
   uses-material-design: true
+
   assets:
     - lib/assets/images/logo.png
     - lib/assets/images/veggie_delight.png
     - lib/assets/images/chicken_teriyaki.png
     - lib/assets/images/tuna_melt.png
     - lib/assets/images/meatball_marinara.png
-
